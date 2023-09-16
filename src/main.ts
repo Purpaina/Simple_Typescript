@@ -4,20 +4,20 @@ import * as fs from 'fs';
 import { Maybe } from './utilities';
 import { processCLIArguments } from './cli-arguments';
 
+const inputPath = './input-data/';
+const outputPath = './output-data/';
+
 function main(argv: string[]): void {
   const params = processCLIArguments(argv);
-  console.log(params);
 
   const jsonData = JSON.parse(
-    fs.readFileSync(
-      `./input-data/${params.inputFile ?? 'input.json'}`,
-      'utf-8',
-    ),
+    fs.readFileSync(inputPath + (params.inputFile ?? 'input.json'), 'utf-8'),
   );
   const sampleData: Maybe<Person[]> = plainToInstance(
     Person,
     Array.isArray(jsonData) ? (jsonData as unknown[]) : [jsonData as unknown],
   );
+
   if (!sampleData) {
     return;
   }
@@ -29,12 +29,20 @@ function main(argv: string[]): void {
     { sortOn: 'first_name', direction: 'ascending' },
     { sortOn: 'dob', direction: 'ascending' },
   ]);
-  console.log(myGroup.toLogString());
+  const printString = myGroup.toLogString();
   const data = instanceToPlain(myGroup);
+  console.log(printString);
 
+  if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath, { recursive: true });
+  }
   fs.writeFileSync(
-    `./output-data/${params.outputFile ?? 'output'}.json`,
+    `${outputPath}${params.outputFile ?? 'output'}.json`,
     JSON.stringify(data, null, 2),
+  );
+  fs.writeFileSync(
+    `${outputPath}${params.outputFile ?? 'output'}.txt`,
+    printString,
   );
 }
 
