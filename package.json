@@ -1,0 +1,20 @@
+{
+  "name": "simple_typescript",
+  "version": "1.0.0",
+  "description": "A simple testing project for typescript.",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf ./build",
+    "_build": "npx tsc",
+    "build": "npm run clean && npm run _build",
+    "run": "node ./build/main.js",
+    "run:fresh": "npm run build && npm run run"
+  },
+  "author": "Brandon Robinson",
+  "dependencies": {
+    "@types/node": "^20.6.0",
+    "class-transformer": "^0.5.1",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.1"
+  }
+}
