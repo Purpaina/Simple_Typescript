@@ -1,6 +1,5 @@
-import "reflect-metadata";
-import { Exclude, Transform, Type } from "class-transformer";
-import { Maybe } from "./utilities";
+import 'reflect-metadata';
+import { Exclude, Transform, Type } from 'class-transformer';
 
 /**
  * A basic name with an optional middle name
@@ -35,7 +34,7 @@ export class Person {
 
   formattedName(): string {
     return `${this.name.first}${
-      this.name.middle ? ` ${this.name.middle}` : ""
+      this.name.middle ? ` ${this.name.middle}` : ''
     } ${this.name.last}`;
   }
 }
@@ -55,7 +54,7 @@ export class Group {
    */
   youngest(): Person {
     return this._group.reduce((previousValue, currentValue) =>
-      previousValue.dob > currentValue.dob ? previousValue : currentValue
+      previousValue.dob > currentValue.dob ? previousValue : currentValue,
     );
   }
 
@@ -64,7 +63,7 @@ export class Group {
    */
   oldest(): Person {
     return this._group.reduce((previousValue, currentValue) =>
-      previousValue.dob < currentValue.dob ? previousValue : currentValue
+      previousValue.dob < currentValue.dob ? previousValue : currentValue,
     );
   }
 
@@ -79,26 +78,26 @@ export class Group {
    */
   sortBy(
     sortLayers: {
-      sortOn: "dob" | "first_name" | "last_name";
-      direction: "ascending" | "descending";
-    }[]
+      sortOn: 'dob' | 'first_name' | 'last_name';
+      direction: 'ascending' | 'descending';
+    }[],
   ) {
-    let getValue: ((entry: Person) => Date | String)[] = sortLayers.map(
-      (entry) => {
+    const getValue: ((entry: Person) => Date | string)[] = sortLayers.map(
+      entry => {
         switch (entry.sortOn) {
-          case "dob":
+          case 'dob':
             return (entry: Person) => entry.dob;
             break;
-          case "first_name":
+          case 'first_name':
             return (entry: Person) => entry.name.first;
             break;
-          case "last_name":
+          case 'last_name':
             return (entry: Person) => entry.name.last;
             break;
           default:
             throw new Error(`Sort on ${entry.sortOn} not supported.`);
         }
-      }
+      },
     );
     const sortFunction = (lhs: Person, rhs: Person) => {
       let result = 0;
@@ -107,24 +106,17 @@ export class Group {
           continue;
         }
         switch (sortLayers[i].direction) {
-          case "ascending":
+          case 'ascending':
             result = getValue[i](lhs) > getValue[i](rhs) ? -1 : 1;
-          case "descending":
+            break;
+          case 'descending':
             result = getValue[i](lhs) < getValue[i](rhs) ? -1 : 1;
+            break;
         }
         break;
       }
       return result;
     };
-
-    // if (direction === "ascending") {
-    //   sortFunction = (lhs: Person, rhs: Person) =>
-    //     getValue(lhs) <= getValue(rhs) ? -1 : 1;
-    // } else {
-    //   sortFunction = (lhs: Person, rhs: Person) =>
-    //     getValue(lhs) > getValue(rhs) ? -1 : 1;
-    // }
-
     this._group = this._group.sort(sortFunction);
   }
 
@@ -139,14 +131,14 @@ export class Group {
     }, 0);
 
     return this._group
-      .map((entry) => {
+      .map(entry => {
         const formattedName = entry.formattedName();
         return `${entry.id
           .toString()
-          .padStart(3, "0")}) ${formattedName}${" ".repeat(
-          longestNameLength - formattedName.length
+          .padStart(3, '0')}) ${formattedName}${' '.repeat(
+          longestNameLength - formattedName.length,
         )} ${entry.dob.toDateString()}`;
       })
-      .join("\n");
+      .join('\n');
   }
 }

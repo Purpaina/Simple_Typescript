@@ -1,4 +1,4 @@
-import { Maybe } from "./utilities";
+import { Maybe } from './utilities';
 
 export interface CLIArguments {
   inputFile?: string;
@@ -7,32 +7,32 @@ export interface CLIArguments {
 
 function getNoParamError(paramName: Maybe<string>): Error {
   return new Error(
-    `No parameter passed${paramName ? ` for ${paramName}` : ""}.`
+    `No parameter passed${paramName ? ` for ${paramName}` : ''}.`,
   );
 }
 
 export function processCLIArguments(input: string[]): CLIArguments {
-  let output: CLIArguments = {};
-  let checkParams: Partial<Record<keyof CLIArguments, boolean>> = {};
+  const output: CLIArguments = {};
+  const checkParams: Partial<Record<keyof CLIArguments, boolean>> = {};
   let isParam = false;
   let paramName: Maybe<keyof CLIArguments> = undefined;
   for (let i = 0; i < input.length; i++) {
     switch (input[i].toLowerCase()) {
-      case "-i":
-      case "--input":
+      case '-i':
+      case '--input':
         if (isParam) {
           throw getNoParamError(paramName);
         }
         isParam = true;
-        paramName = "inputFile";
+        paramName = 'inputFile';
         break;
-      case "-o":
-      case "--output":
+      case '-o':
+      case '--output':
         if (isParam) {
           throw getNoParamError(paramName);
         }
         isParam = true;
-        paramName = "outputFile";
+        paramName = 'outputFile';
         break;
       default:
         if (!isParam) {
