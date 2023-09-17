@@ -49,56 +49,49 @@ export class Group {
     this._group = input;
   }
 
-  /**
-   * Get the youngest in the group
-   */
   youngest(): Person {
     return this._group.reduce((previousValue, currentValue) =>
       previousValue.dob > currentValue.dob ? previousValue : currentValue,
     );
   }
 
-  /**
-   * Get the oldest in the group
-   */
   oldest(): Person {
     return this._group.reduce((previousValue, currentValue) =>
       previousValue.dob < currentValue.dob ? previousValue : currentValue,
     );
   }
 
-  /**
-   * Sorts the data and saves in the object.
-   *
-   * Used as an example. Probably better to split the different sortings out.
-   * Like sortByDOB(), sortByFirstName(), and sortByLastName()
-   *
-   * @param sortOn The item to sort on
-   * @param direction The direction to sort on
-   */
   sortBy(
     sortLayers: {
-      sortOn: 'dob' | 'first_name' | 'last_name';
+      sortOn:
+        | 'dob'
+        | 'dob_year'
+        | 'dob_month'
+        | 'dob_day'
+        | 'first_name'
+        | 'last_name';
       direction: 'ascending' | 'descending';
     }[],
   ) {
-    const getValue: ((entry: Person) => Date | string)[] = sortLayers.map(
-      entry => {
+    const getValue: ((entry: Person) => Date | string | number)[] =
+      sortLayers.map(entry => {
         switch (entry.sortOn) {
           case 'dob':
             return (entry: Person) => entry.dob;
-            break;
           case 'first_name':
             return (entry: Person) => entry.name.first;
-            break;
           case 'last_name':
             return (entry: Person) => entry.name.last;
-            break;
+          case 'dob_year':
+            return (entry: Person) => entry.dob.getFullYear();
+          case 'dob_month':
+            return (entry: Person) => entry.dob.getMonth();
+          case 'dob_day':
+            return (entry: Person) => entry.dob.getDay();
           default:
             throw new Error(`Sort on ${entry.sortOn} not supported.`);
         }
-      },
-    );
+      });
     const sortFunction = (lhs: Person, rhs: Person) => {
       let result = 0;
       for (let i = 0; i < getValue.length; i++) {
@@ -107,10 +100,10 @@ export class Group {
         }
         switch (sortLayers[i].direction) {
           case 'ascending':
-            result = getValue[i](lhs) > getValue[i](rhs) ? -1 : 1;
+            result = getValue[i](lhs) < getValue[i](rhs) ? -1 : 1;
             break;
           case 'descending':
-            result = getValue[i](lhs) < getValue[i](rhs) ? -1 : 1;
+            result = getValue[i](lhs) > getValue[i](rhs) ? -1 : 1;
             break;
         }
         break;
@@ -120,10 +113,6 @@ export class Group {
     this._group = this._group.sort(sortFunction);
   }
 
-  /**
-   * Generates a string of everyone in the group for logging
-   * @returns A loggable string of everyone in the group
-   */
   toLogString(): string {
     const longestNameLength = this._group.reduce((currentMax, nextPerson) => {
       const workingMax = nextPerson.formattedName().length;

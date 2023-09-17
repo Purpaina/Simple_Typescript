@@ -26,10 +26,14 @@ async function main(argv: string[]): Promise<void> {
   const myGroup = new Group(...sampleData);
   console.log(myGroup.toLogString());
   console.log('---------------------');
-  myGroup.sortBy([
-    { sortOn: 'first_name', direction: 'ascending' },
-    { sortOn: 'dob', direction: 'ascending' },
-  ]);
+  try {
+    const sortData = JSON.parse(
+      fs.readFileSync(inputPath + (params.inputFile ?? 'sort.json'), 'utf-8'),
+    );
+    myGroup.sortBy(sortData);
+  } catch (e) {
+    console.log(e);
+  }
   const printString = myGroup.toLogString();
   const data = instanceToPlain(myGroup);
   console.log(printString);
