@@ -3,11 +3,12 @@ import { Group, Person } from './people';
 import * as fs from 'fs';
 import { Maybe } from './utilities';
 import { processCLIArguments } from './cli-arguments';
+import { rimraf } from 'rimraf';
 
 const inputPath = './input-data/';
 const outputPath = './output-data/';
 
-function main(argv: string[]): void {
+async function main(argv: string[]): Promise<void> {
   const params = processCLIArguments(argv);
 
   const jsonData = JSON.parse(
@@ -32,6 +33,10 @@ function main(argv: string[]): void {
   const printString = myGroup.toLogString();
   const data = instanceToPlain(myGroup);
   console.log(printString);
+
+  if (params.flushOutput) {
+    await rimraf(outputPath);
+  }
 
   if (!fs.existsSync(outputPath)) {
     fs.mkdirSync(outputPath, { recursive: true });

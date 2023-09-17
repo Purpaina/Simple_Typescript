@@ -4,11 +4,11 @@
   "description": "A simple testing project for typescript.",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf ./build",
-    "_build": "npx tsc",
-    "build": "npm run clean && npm run _build",
-    "run": "node ./build/main.js",
-    "run:fresh": "npm run build && npm run run"
+    "clean:all": "rimraf ./build ./output-data",
+    "clean:build": "rimraf ./build",
+    "build": "npx tsc",
+    "start": "node ./build/main.js",
+    "reinstall": "rimraf ./node_modules && npm i"
   },
   "author": "Brandon Robinson",
   "dependencies": {

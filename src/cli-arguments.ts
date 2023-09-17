@@ -3,6 +3,7 @@ import { Maybe } from './utilities';
 export interface CLIArguments {
   inputFile?: string;
   outputFile?: string;
+  flushOutput: boolean;
 }
 
 function getNoParamError(paramName: Maybe<string>): Error {
@@ -12,7 +13,7 @@ function getNoParamError(paramName: Maybe<string>): Error {
 }
 
 export function processCLIArguments(input: string[]): CLIArguments {
-  const output: CLIArguments = {};
+  const output: CLIArguments = { flushOutput: false };
   const checkParams: Partial<Record<keyof CLIArguments, boolean>> = {};
   let isParam = false;
   let paramName: Maybe<keyof CLIArguments> = undefined;
@@ -34,6 +35,14 @@ export function processCLIArguments(input: string[]): CLIArguments {
         isParam = true;
         paramName = 'outputFile';
         break;
+      case '-f':
+      case '--flushoutput':
+        if (checkParams.flushOutput) {
+          throw new Error(`Duplicate parameters defined.`);
+        }
+        output.flushOutput = true;
+        checkParams.flushOutput = true;
+        break;
       default:
         if (!isParam) {
           throw new Error(`Unknown param passed.`);
@@ -42,7 +51,7 @@ export function processCLIArguments(input: string[]): CLIArguments {
           throw new Error(`Internal error. paramName not defined.`);
         }
         if (checkParams[paramName]) {
-          throw new Error(`Duplicate parameters defined`);
+          throw new Error(`Duplicate parameters defined.`);
         }
         checkParams[paramName] = true;
         output[paramName] = input[i];
