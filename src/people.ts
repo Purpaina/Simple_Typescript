@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Exclude, Transform, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
 /**
  * A basic name with an optional middle name
@@ -44,23 +44,40 @@ export class Person {
  */
 export class Group {
   @Type(() => Person)
+  @Expose({ name: 'group' })
   private _group: Person[];
+
   constructor(...input: Person[]) {
     this._group = input;
   }
 
+  /**
+   * Get the youngest person in the group.
+   *
+   * @returns The youngest person
+   */
   youngest(): Person {
     return this._group.reduce((previousValue, currentValue) =>
       previousValue.dob > currentValue.dob ? previousValue : currentValue,
     );
   }
 
+  /**
+   * Get the oldest person in the group.
+   *
+   * @returns The oldest person
+   */
   oldest(): Person {
     return this._group.reduce((previousValue, currentValue) =>
       previousValue.dob < currentValue.dob ? previousValue : currentValue,
     );
   }
 
+  /**
+   * Sort the group based on multiple items
+   *
+   * @param sortLayers An array of sorting options
+   */
   sortBy(
     sortLayers: {
       sortOn:
@@ -92,6 +109,7 @@ export class Group {
             throw new Error(`Sort on ${entry.sortOn} not supported.`);
         }
       });
+
     const sortFunction = (lhs: Person, rhs: Person) => {
       let result = 0;
       for (let i = 0; i < getValue.length; i++) {
@@ -113,6 +131,11 @@ export class Group {
     this._group = this._group.sort(sortFunction);
   }
 
+  /**
+   * Generate a string for debugging purposes.
+   *
+   * @returns A string to log the group
+   */
   toLogString(): string {
     const longestNameLength = this._group.reduce((currentMax, nextPerson) => {
       const workingMax = nextPerson.formattedName().length;

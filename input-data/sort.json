@@ -1,5 +1,5 @@
 [
   { "sortOn": "dob_year", "direction": "ascending" },
-  { "sortOn": "dob_day", "direction": "ascending" },
+  { "sortOn": "dob_month", "direction": "ascending" },
   { "sortOn": "first_name", "direction": "ascending" }
 ]
