@@ -10,6 +10,18 @@ export interface Name {
   last: string;
 }
 
+export const sortableFieldsList = [
+  'dob',
+  'dob_year',
+  'dob_month',
+  'dob_day',
+  'first_name',
+  'middle_name',
+  'last_name',
+] as const;
+
+export type SortableFields = (typeof sortableFieldsList)[number];
+
 /**
  * A single person
  */
@@ -51,6 +63,10 @@ export class Group {
     this._group = input;
   }
 
+  get people(): Person[] {
+    return this._group;
+  }
+
   /**
    * Get the youngest person in the group.
    *
@@ -80,18 +96,12 @@ export class Group {
    */
   sortBy(
     sortLayers: {
-      sortOn:
-        | 'dob'
-        | 'dob_year'
-        | 'dob_month'
-        | 'dob_day'
-        | 'first_name'
-        | 'last_name';
+      sortOn: SortableFields;
       direction: 'ascending' | 'descending';
     }[],
   ) {
     const getValue: ((entry: Person) => Date | string | number)[] =
-      sortLayers.map(entry => {
+      sortLayers.map((entry) => {
         switch (entry.sortOn) {
           case 'dob':
             return (entry: Person) => entry.dob;
@@ -143,7 +153,7 @@ export class Group {
     }, 0);
 
     return this._group
-      .map(entry => {
+      .map((entry) => {
         const formattedName = entry.formattedName();
         return `${entry.id
           .toString()
