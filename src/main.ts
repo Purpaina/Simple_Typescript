@@ -1,6 +1,7 @@
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import * as fs from 'fs';
-import { Group, Person } from './people';
+import { Person } from './people';
+import { Group } from './group';
 
 const inputPath = './input-data/';
 const outputPath = './output-data/';
@@ -35,7 +36,7 @@ function main(): void {
   }
 
   // Log it to the console
-  console.log(groupOfPeople.toLogString());
+  console.log(groupOfPeople.toString());
 
   // Make the directory if it doesn't exist
   if (!fs.existsSync(outputPath)) {
@@ -50,6 +51,20 @@ function main(): void {
     outputPath + `output.json`,
     JSON.stringify(groupPlain, null, 2),
   );
+
+  // Create the sorting folder
+  if (!fs.existsSync(outputPath + 'sortings/')) {
+    fs.mkdirSync(outputPath + 'sortings/', { recursive: true });
+  }
+
+  // Sort by everything we can sort by
+  Group.sortableFieldsList.forEach((sorting) => {
+    groupOfPeople.sortBy([{ sortOn: sorting, direction: 'ascending' }]);
+    fs.writeFileSync(
+      `${outputPath}sortings/${sorting}.json`,
+      JSON.stringify(instanceToPlain(groupOfPeople), null, 2),
+    );
+  });
 }
 
 main();
